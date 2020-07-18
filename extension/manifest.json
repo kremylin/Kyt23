@@ -1,0 +1,27 @@
+ {
+	"manifest_version": 2,
+	"name": "Kyt23",
+	"version": "1.0.0",
+	"icons": {
+			"16": "icons/Kyt23.png",
+			"32": "icons/Kyt23.png",
+			"48": "icons/Kyt23.png",
+			"128": "icons/Kyt23.png"
+	},
+	"description": "A plain text description",
+	"page_action": {
+		"default_icon": {
+			"16": "icons/Kyt23.png",
+			"32": "icons/Kyt23.png",
+			"48": "icons/Kyt23.png",
+			"128": "icons/Kyt23.png"
+		},
+		"default_title": "Kyt23",
+		"default_popup": "main.html"
+	},
+	"background": {
+		"scripts": ["background.js"],
+		"persistent": false
+	},
+	"permissions": ["tabs"]
+}
