@@ -1,9 +1,10 @@
-var http = require('http');
-var fs = require('fs');
-var path = require('path');
-var ffmpeg = require('fluent-ffmpeg');
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const ffmpeg = require('fluent-ffmpeg');
 const { exec } = require("child_process");
 const ytdl = require('ytdl-core');
+const config = require('../extension/config.json');
 
 http.createServer(async function (request, response) {
 	console.log('request starting...');
@@ -44,7 +45,7 @@ http.createServer(async function (request, response) {
 
 	});
 
-}).listen(8091);
+}).listen(config.downloadPort);
 
 
 let respondWithFile = (response, filename, contentType) => {
@@ -74,4 +75,4 @@ let respondWithFile = (response, filename, contentType) => {
 let popupPage = (response) =>{
 	
 }
-console.log('Server running at http://127.0.0.1:8091/');
+console.log('Server running at ' + config.downloadServer + ':' + config.downloadPort);
