@@ -17,11 +17,12 @@
 			"128": "icons/Kyt23.png"
 		},
 		"default_title": "Kyt23",
-		"default_popup": "main.html"
+		"default_popup": "popup.html"
 	},
 	"background": {
 		"scripts": ["background.js"],
 		"persistent": false
 	},
-	"permissions": ["tabs"]
+	"permissions": ["tabs","<all_urls>"],
+	"content_security_policy": "script-src 'self' http://localhost:8092; object-src 'self'"
 }
