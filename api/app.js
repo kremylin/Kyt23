@@ -1,4 +1,4 @@
-const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
@@ -6,7 +6,12 @@ const { exec } = require("child_process");
 const ytdl = require('ytdl-core');
 const config = require('../extension/config.json');
 
-http.createServer(async function (request, response) {
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
+
+https.createServer(options, async function (request, response) {
 	console.log('request starting...');
 
 	let url = request.url.substring(1);
@@ -27,11 +32,13 @@ http.createServer(async function (request, response) {
 
 	console.log('filename3 : '+ filename);
 
+	let filePath = 'api/tmp/'+filename;
+
 	var proc = new ffmpeg({source: stream});
 
 	proc.withAudioCodec('libmp3lame')
 	.toFormat('mp3')
-	.output(filename)
+	.output(filePath)
 	.run();
 	proc.on('end', function() {
 		console.log('answering');
@@ -40,7 +47,7 @@ http.createServer(async function (request, response) {
 
 		console.log('filename2 : '+ filename);
 
-		respondWithFile(response, filename, contentType);
+		respondWithFile(response, filePath, filename, contentType);
 		console.log('finished');
 
 	});
@@ -48,8 +55,8 @@ http.createServer(async function (request, response) {
 }).listen(config.downloadPort);
 
 
-let respondWithFile = (response, filename, contentType) => {
-	fs.readFile(filename, function(error, content) {
+let respondWithFile = (response, filePath, filename, contentType) => {
+	fs.readFile(filePath, function(error, content) {
 		if (error) {
 
 			console.log('Error : '+error.code);
@@ -62,12 +69,18 @@ let respondWithFile = (response, filename, contentType) => {
 			else {
 				response.writeHead(500);
 				response.end('Sorry, check with the site admin for error: '+error.code+' ..\n');
-				response.end(); 
+				response.end();
+				fs.unlinkSync(filePath);
 			}
 		}
 		else {
-			response.writeHead(200, { 'Content-Type': contentType, 'Content-Disposition': 'attachment; filename="'+encodeURIComponent(filename)+'"' });
+			response.writeHead(200, {
+				'Content-Type': contentType,
+				'Content-Disposition': 'attachment; filename="'+encodeURIComponent(filename)+'"',
+				'Content-Length': content.length
+			});
 			response.end(content, 'utf-8');
+			fs.unlinkSync(filePath);
 		}
 	});
 }
